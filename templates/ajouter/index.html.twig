@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ajouter une boisson{% endblock %}
+
+{% block body %}
+	<h1>Ajouter une boisson</h1>
+
+	{{ form_start(form) }}
+		{{ form_widget(form) }}
+
+		<label for="couleur">Couleur</label>
+		<select class="form-select" id="couleurs" onChange="callApi()">
+			{% for couleur in couleurs %}
+				<option value="{{ couleur.id }}">{{ couleur.nom }}</option>
+			{% endfor %}
+		</select>
+
+		<br/>
+		<button class="btn btn-success btn-block" style="border-radius:25px;"><i class="fas fa-plus"></i></button>
+	{{ form_end(form) }}
+
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script>
+
+		callApi();
+
+		function callApi(){
+			var couleur_select = document.getElementById("couleurs");
+			var fruit_select = document.getElementById("cocktail_Fruit");
+			var couleur_id = couleur_select.value;
+
+			let url= 'http://localhost/symfony/cocktail/public/api/couleurs/' + couleur_id;
+			axios.get(url).then( response => {
+				// Clear
+				var i, L = couleur_select.options.length - 1;
+				for(i = L; i >= 0; i--) {
+					fruit_select.remove(i);
+				}
+
+				// Fill
+				let tableau = response.data;
+				for( let fruit of tableau){
+					var element = document.createElement("option");
+					element.textContent = fruit.nom;
+					element.value = fruit.id;
+					fruit_select.appendChild(element);
+				}
+			});
+		}
+
+	</script>
+
+{% endblock %}
